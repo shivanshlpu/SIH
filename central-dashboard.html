@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Dashboard - Smart Tourist Safety System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5563DE;
+            --secondary-color: #74ABE2;
+            --accent-color: #ffd700;
+            --info-color: #17a2b8;
+            --text-color: #fff;
+            --bg-blur: rgba(255, 255, 255, 0.1);
+            --container-bg: rgba(255, 255, 255, 0.15);
+            --button-color: #3753a8;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .navbar {
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            top: 0;
+            left: 0;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .navbar h1 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+        .logout-btn {
+            background: none;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+        }
+        .container {
+            text-align: center;
+            animation: fadeIn 1.5s ease-in;
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+        .dashboard-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .dashboard-btn {
+            background: var(--button-color);
+            border: none;
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .dashboard-btn:hover {
+            background: #2b4183;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <h1>Smart Tourist Safety System</h1>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+    </header>
+    <div class="container">
+        <h2 id="welcome-message">Welcome, Tourist!</h2>
+        <div class="dashboard-options">
+            <a href="sos-individual-dashboard.html" class="dashboard-btn">
+                <i class="fas fa-map-marker-alt"></i> Watch Live Location & SOS
+            </a>
+            <a href="individual-dashboard2.html" class="dashboard-btn">
+                <i class="fas fa-id-card"></i> View/Download Virtual ID
+            </a>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if (loggedInUser && loggedInUser.name) {
+                document.getElementById('welcome-message').textContent = `Welcome, ${loggedInUser.name}!`;
+            }
+        });
+        
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'individual-login.html';
+        });
+    </script>
+</body>
+</html>

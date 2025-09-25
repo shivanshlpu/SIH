@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Tourist Safety - Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            top: 0;
+            left: 0;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .navbar h1 {
+            font-size: 1.8rem;
+            color: #ffd700;
+        }
+
+        .container {
+            text-align: center;
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .choice-cards {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 100%; /* Changed to fluid width for better responsiveness */
+            max-width: 280px; /* Set max-width to control size on large screens */
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .card h3 {
+            font-size: 1.5rem; /* Adjusted font size */
+            margin-bottom: 0.5rem; /* Adjusted margin */
+            color: #ffd700;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .card p {
+            font-size: 0.9rem; /* Adjusted font size */
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .choice-cards {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .navbar h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <h1>Smart Tourist Safety System</h1>
+    </header>
+
+    <div class="container">
+        <h2>Welcome! Please select your mode</h2>
+
+        <div class="choice-cards">
+            <div class="card" id="tourist-card">
+                <h3>Tourist</h3>
+                <p>Register or Login to plan your safe journey and get emergency support.</p>
+            </div>
+
+            <div class="card" id="guide-card">
+                <h3>Guide (Admin)</h3>
+                <p>Manage tourist groups, verify members, and provide support as a guide.</p>
+            </div>
+            
+            <div class="card" id="individual-card">
+                <h3>Individual/Group</h3>
+                <p>Register a small group and get a virtual ID for each member.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Smart Tourist Safety System
+    </footer>
+
+    <script>
+        document.getElementById('tourist-card').addEventListener('click', function () {
+            window.location.href = 'tourist-registration.html';
+        });
+
+        document.getElementById('guide-card').addEventListener('click', function () {
+            window.location.href = 'guide-registration.html';
+        });
+        
+        document.getElementById('individual-card').addEventListener('click', function () {
+            window.location.href = 'individual-registration.html';
+        });
+    </script>
+</body>
+
+</html>

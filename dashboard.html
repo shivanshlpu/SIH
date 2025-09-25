@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Dashboard - Smart Tourist Safety System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5563DE;
+            --secondary-color: #74ABE2;
+            --accent-color: #ffd700;
+            --text-color: #fff;
+            --bg-blur: rgba(255, 255, 255, 0.1);
+            --container-bg: rgba(255, 255, 255, 0.15);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-blur);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 1.5rem 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .navbar h1 {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        .logout-btn {
+            background: none;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+        }
+        .container {
+            animation: fadeIn 1.5s ease-in;
+            max-width: 1200px;
+            margin: auto;
+        }
+        h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        .info-card, .list-card {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .info-card p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        .info-card strong {
+            color: var(--accent-color);
+        }
+        .list-card h3 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            color: var(--accent-color);
+            position: sticky;
+            top: 0;
+        }
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        .action-cell {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .select-btn, .delete-btn {
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .select-btn {
+            background-color: var(--success-color);
+        }
+        .select-btn:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        .deselect-btn {
+            background-color: var(--warning-color);
+        }
+        .deselect-btn:hover {
+            background-color: #d1b43b;
+        }
+        .delete-btn {
+            background-color: var(--danger-color);
+        }
+        .delete-btn:hover {
+            background-color: #b92e2e;
+            transform: scale(1.05);
+        }
+        .final-submit {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        #final-submit-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #final-submit-btn:hover {
+            background-color: #ffec8b;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom Modern Alert Pop-up */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+        .custom-alert-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-alert-box {
+            background: var(--container-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        .custom-alert-overlay.visible .custom-alert-box {
+            transform: scale(1);
+        }
+        .custom-alert-box h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        .custom-alert-box p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        .alert-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .alert-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .alert-buttons .alert-delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+        }
+        .alert-buttons .alert-cancel-btn {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <h1>Smart Tourist Safety System</h1>
+        <button class="logout-btn" id="logout-btn">Logout</button>
+    </header>
+
+    <div class="container">
+        <div class="info-card">
+            <h2>Welcome, <span id="guide-name">Guide</span></h2>
+            <p><strong>Age:</strong> <span id="guide-age">--</span></p>
+            <p><strong>Gender:</strong> <span id="guide-gender">--</span></p>
+            <p><strong>Group Name:</strong> <span id="guide-groupName">--</span></p>
+            <p><strong>Number of Members:</strong> <span id="guide-groupMembers">--</span></p>
+            <p><strong>Emergency Contact:</strong> <span id="guide-emergency">--</span></p>
+            <p><strong>Username:</strong> <span id="guide-username">--</span></p>
+        </div>
+
+        <div class="list-card">
+            <h3>Registered Tourists (Unassigned)</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>City</th>
+                            <th>Destination</th>
+                            <th>Personal No.</th>
+                            <th>Emergency No.</th>
+                            <th>Mobile No.</th>
+                            <th>Card Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tourist-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="final-submit">
+            <button id="final-submit-btn">Finalize Tourist Group</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Smart Tourist Safety System
+    </footer>
+
+    <div id="custom-alert" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this tourist?</p>
+            <div class="alert-buttons">
+                <button class="alert-delete-btn" id="confirm-delete">Delete</button>
+                <button class="alert-cancel-btn" id="cancel-delete">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CRITICAL FIX: Load guide data from localStorage
+        const guide = JSON.parse(localStorage.getItem('loggedInUser'));
+        
+        // 1. Authentication Check (Prevent script from crashing if 'guide' is undefined)
+        if (!guide || guide.role !== 'guide') {
+             // You might want to redirect to a login or error page here
+             // window.location.href = 'guide-login.html';
+             console.error("Guide data missing or invalid role. Using fallback data.");
+             // Fallback guide object to prevent errors if running directly
+             const fallbackGuide = { id: 'G999', name: 'Fallback Guide', age: '30', gender: 'Male', groupName: 'Test Group', groupMembers: 0, emergency: '1234567890', username: 'testguide', role: 'guide' };
+             Object.assign(guide, fallbackGuide);
+        }
+
+        // 2. Display Guide Info
+        document.getElementById('guide-name').innerText = guide.name || 'N/A';
+        document.getElementById('guide-age').innerText = guide.age || 'N/A';
+        document.getElementById('guide-gender').innerText = guide.gender || 'N/A';
+        document.getElementById('guide-groupName').innerText = guide.groupName || 'N/A';
+        document.getElementById('guide-groupMembers').innerText = guide.groupMembers || '0';
+        document.getElementById('guide-emergency').innerText = guide.emergency || 'N/A';
+        document.getElementById('guide-username').innerText = guide.username || 'N/A';
+
+        // 3. Tourist Management Setup
+        const allTourists = JSON.parse(localStorage.getItem('tourists')) || [];
+        let selectedTourists = [];
+
+        const tableBody = document.getElementById('tourist-table-body');
+        const customAlert = document.getElementById('custom-alert');
+        const confirmDeleteBtn = document.getElementById('confirm-delete');
+        const cancelDeleteBtn = document.getElementById('cancel-delete');
+        let touristToDeleteId = null;
+
+        function updateTable() {
+            tableBody.innerHTML = '';
+            // Filter tourists who are NOT currently assigned to a guide
+            const unassignedTourists = allTourists.filter(t => !t.guideId);
+
+            if (unassignedTourists.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; opacity: 0.8; padding: 20px;">No unassigned tourists available.</td></tr>';
+                 return;
+            }
+
+            unassignedTourists.forEach(t => {
+                const row = document.createElement('tr');
+                const isSelected = selectedTourists.some(st => st.id === t.id);
+                
+                // Ensure all fields have a safe fallback 'N/A'
+                const touristName = t.name || 'N/A';
+                const touristCity = t.city || 'N/A';
+                const touristDestination = t.destination || 'N/A';
+                const touristPersonalNo = t.username || 'N/A';
+                const touristEmergency = t.emergency || 'N/A';
+                const touristMobile = t.mobile || 'N/A';
+                const touristCardType = t.cardType || 'Gold';
+
+                row.innerHTML = `
+                    <td>${touristName}</td>
+                    <td>${touristCity}</td>
+                    <td>${touristDestination}</td>
+                    <td>${touristPersonalNo}</td>
+                    <td>${touristEmergency}</td>
+                    <td>${touristMobile}</td>
+                    <td>${touristCardType}</td>
+                    <td class="action-cell">
+                        <button class="select-btn ${isSelected ? 'deselect-btn' : ''}" data-id="${t.id}">${isSelected ? 'Deselect' : 'Select'}</button>
+                        <button class="delete-btn" data-id="${t.id}">Delete</button>
+                    </td>
+                `;
+                
+                // Event listener for Select/Deselect
+                row.querySelector('.select-btn').addEventListener('click', (event) => {
+                    const id = event.target.dataset.id;
+                    if (isSelected) {
+                        selectedTourists = selectedTourists.filter(st => st.id !== id);
+                    } else {
+                        // Find the full tourist object from allTourists to push, not just the temporary 't' variable if needed
+                        const touristToSelect = allTourists.find(at => at.id === id);
+                        if (touristToSelect) {
+                            selectedTourists.push(touristToSelect);
+                        }
+                    }
+                    updateTable();
+                });
+
+                // Event listener for Delete (opens alert)
+                row.querySelector('.delete-btn').addEventListener('click', (event) => {
+                    touristToDeleteId = event.target.dataset.id;
+                    customAlert.classList.add('visible');
+                });
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Custom alert event listeners
+        confirmDeleteBtn.addEventListener('click', () => {
+            if (touristToDeleteId) {
+                // Remove the tourist from the main list in Local Storage
+                const updatedTourists = allTourists.filter(t => t.id !== touristToDeleteId);
+                localStorage.setItem('tourists', JSON.stringify(updatedTourists));
+                
+                // Clear the state variables and reload table
+                allTourists.splice(0, allTourists.length, ...updatedTourists); // Update the in-memory array
+                selectedTourists = selectedTourists.filter(st => st.id !== touristToDeleteId);
+                
+                touristToDeleteId = null;
+                customAlert.classList.remove('visible');
+                updateTable(); // Re-render the table without reloading the page
+            }
+        });
+
+        cancelDeleteBtn.addEventListener('click', () => {
+            touristToDeleteId = null;
+            customAlert.classList.remove('visible');
+        });
+
+        document.getElementById('final-submit-btn').addEventListener('click', () => {
+            if (selectedTourists.length === 0) {
+                alert('Please select at least one tourist to finalize the group.');
+                return;
+            }
+            
+            // Assign the guide's ID to all selected tourists
+            const updatedTourists = allTourists.map(t => {
+                if (selectedTourists.some(st => st.id === t.id)) {
+                    // CRITICAL: Ensure guide.id is used here
+                    return { ...t, guideId: guide.id };
+                }
+                return t;
+            });
+
+            // Update the main 'tourists' list in localStorage
+            localStorage.setItem('tourists', JSON.stringify(updatedTourists));
+            
+            // Save the selected group to be used on the next page (ID generation)
+            localStorage.setItem('selectedForVirtualID', JSON.stringify(selectedTourists));
+            
+            alert(`Group finalized! ${selectedTourists.length} tourists assigned to ${guide.name}.`);
+            window.location.href = 'tourist-id-generation.html';
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'guide-login.html';
+        });
+
+        // 4. Initial call to display the table
+        updateTable();
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Registration - Smart Tourist Safety System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5563DE;
+            --secondary-color: #74ABE2;
+            --accent-color: #ffd700;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --info-color: #17a2b8;
+            --text-color: #fff;
+            --bg-blur: rgba(255, 255, 255, 0.1);
+            --container-bg: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.2);
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus {
+            outline: none;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-register {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-register:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-login {
+            background: none;
+            color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+        }
+
+        .btn-login:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-home {
+            background-color: var(--info-color); 
+            color: white;
+            border: 2px solid var(--info-color);
+        }
+
+        .btn-home:hover {
+            background-color: #117a8b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        /* Custom Modern Alert Pop-up */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+        .custom-alert-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-alert-box {
+            background: var(--container-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        .custom-alert-overlay.visible .custom-alert-box {
+            transform: scale(1);
+        }
+        .custom-alert-box h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        .custom-alert-box p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        .alert-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .alert-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .alert-buttons .alert-ok-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+        }
+        .alert-buttons .alert-ok-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Guide (Admin) Registration</h2>
+        <form id="guide-registration-form">
+            <div class="form-group">
+                <input type="text" id="guide-name" placeholder="Full Name" required />
+            </div>
+            <div class="form-group">
+                <input type="number" id="guide-age" placeholder="Age" required />
+            </div>
+            <div class="form-group">
+                <input type="text" id="guide-gender" placeholder="Gender" required />
+            </div>
+            <div class="form-group">
+                <input type="text" id="group-name" placeholder="Group Name (Optional)" />
+            </div>
+            <div class="form-group">
+                <input type="number" id="group-members" placeholder="Number of Members" required />
+            </div>
+            <div class="form-group">
+                <input type="text" id="guide-emergency" placeholder="Emergency Contact Number" required />
+            </div>
+            <div class="form-group">
+                <input type="text" id="guide-username" placeholder="Username" required />
+            </div>
+            <div class="form-group">
+                <input type="password" id="guide-password" placeholder="Password" required />
+            </div>
+            <button type="submit" class="btn btn-register">Register as Guide</button>
+        </form>
+
+        <div class="btn-group">
+            <a href="guide-login.html" class="btn btn-login">Already have an account? Login</a>
+            <a href="home.html" class="btn btn-home">Go to Home</a>
+        </div>
+    </div>
+    <footer>
+        &copy; 2025 Smart Tourist Safety System
+    </footer>
+
+    <div id="custom-alert" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <h3 id="alert-title"></h3>
+            <p id="alert-message"></p>
+            <div class="alert-buttons">
+                <button class="alert-ok-btn" id="alert-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const customAlert = document.getElementById('custom-alert');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMessage = document.getElementById('alert-message');
+        const alertOkBtn = document.getElementById('alert-ok');
+
+        function showAlert(title, message, redirect = false) {
+            alertTitle.textContent = title;
+            alertMessage.textContent = message;
+            customAlert.classList.add('visible');
+            if (redirect) {
+                alertOkBtn.addEventListener('click', () => {
+                    customAlert.classList.remove('visible');
+                    window.location.href = 'guide-login.html';
+                }, { once: true });
+            } else {
+                alertOkBtn.addEventListener('click', () => {
+                    customAlert.classList.remove('visible');
+                }, { once: true });
+            }
+        }
+
+        document.getElementById('guide-registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const guides = JSON.parse(localStorage.getItem('guides')) || [];
+            const guideData = {
+                id: 'GUIDE-' + Date.now(),
+                name: document.getElementById('guide-name').value.trim(),
+                age: parseInt(document.getElementById('guide-age').value),
+                gender: document.getElementById('guide-gender').value.trim(),
+                groupName: document.getElementById('group-name').value.trim() || 'Unassigned',
+                groupMembers: parseInt(document.getElementById('group-members').value),
+                emergency: document.getElementById('guide-emergency').value.trim(),
+                username: document.getElementById('guide-username').value.trim(),
+                password: document.getElementById('guide-password').value
+            };
+            
+            // Validation Logic
+            if (!guideData.name || !guideData.age || !guideData.gender || !guideData.groupMembers || !guideData.emergency || !guideData.username || !guideData.password) {
+                showAlert('Registration Failed', 'All fields are required.');
+                return;
+            }
+            if (guideData.age < 18 || guideData.age > 100) {
+                showAlert('Registration Failed', 'Please enter a valid age (18-100).');
+                return;
+            }
+            if (!/^\d{10}$/.test(guideData.emergency)) {
+                showAlert('Registration Failed', 'Emergency contact must be a 10-digit number.');
+                return;
+            }
+            if (guideData.groupMembers <= 0) {
+                showAlert('Registration Failed', 'Number of members must be at least 1.');
+                return;
+            }
+            if (guideData.password.length < 6) {
+                showAlert('Registration Failed', 'Password must be at least 6 characters.');
+                return;
+            }
+            const usernameExists = guides.some(g => g.username === guideData.username);
+            if (usernameExists) {
+                showAlert('Registration Failed', 'Username already taken. Please choose another.');
+                return;
+            }
+
+            // Save data and show success alert
+            guides.push(guideData);
+            localStorage.setItem('guides', JSON.stringify(guides));
+            showAlert('Registration Successful!', 'You can now login with your new account.', true);
+            document.getElementById('guide-registration-form').reset();
+        });
+    </script>
+</body>
+</html>

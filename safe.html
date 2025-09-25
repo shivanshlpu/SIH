@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Safety Dashboard - Jaipur</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet.js for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- QRCode.js for generating QR codes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        /* Custom styles for the demo */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        .leaflet-div-icon {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* Horizontal Digital ID Card Styles */
+        .id-card-horizontal {
+            background: linear-gradient(105deg, #3a3a60 0%, #5d5d8a 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .id-card-horizontal .qr-code {
+            background: white;
+            border-radius: 4px;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .id-card-horizontal .details {
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        .id-card-horizontal .name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+        .id-card-horizontal .id-number {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Full-screen map */
+        #tourist-map {
+             border-radius: 8px;
+             height: 100%;
+             width: 100%;
+        }
+
+        /* Custom alert toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, top 0.3s ease-in-out;
+        }
+        .toast.show {
+            opacity: 1;
+            top: 40px;
+        }
+
+        .toast.error {
+            background-color: #ef4444;
+        }
+
+        .toast.success {
+            background-color: #22c55e;
+        }
+
+        /* Centered view container */
+        .view-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Location status indicator */
+        .location-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-dot.active {
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-200 text-gray-800 w-screen h-screen">
+
+    <!-- Custom Alert Toast -->
+    <div id="toast-message" class="toast"></div>
+
+    <!-- Main Application Container -->
+    <div id="app-container" class="w-full h-full">
+
+        <!-- Welcome, Registration, Login, Credentials Views -->
+        <div id="auth-views">
+            <div id="welcome-view" class="view-container">
+                <div class="bg-white p-10 rounded-lg shadow-xl text-center max-w-md w-full">
+                    <i class="fas fa-route text-6xl text-blue-600 mb-4"></i>
+                    <h1 class="text-3xl font-bold mb-2 text-gray-800">Tourist Safety Dashboard</h1>
+                    <p class="text-gray-500 mb-10">Your digital safety companion with live GPS tracking.</p>
+                    <div class="space-y-4">
+                        <button onclick="showView('registration-view')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-lg">New Registration</button>
+                        <button onclick="showView('login-view')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition-colors text-lg">Login with ID</button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-6">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Requires location access for safety features
+                    </p>
+                </div>
+            </div>
+            
+            <div id="registration-view" class="view-container hidden">
+                <div class="bg-white p-10 rounded-lg shadow-xl max-w-md w-full">
+                    <h1 class="text-2xl font-bold mb-6">New Tourist Registration</h1>
+                    <div class="space-y-4">
+                        <input type="text" id="reg-name" placeholder="Full Name" class="w-full p-3 border rounded-lg text-lg">
+                        <input type="text" id="reg-nationality" placeholder="Nationality" class="w-full p-3 border rounded-lg text-lg">
+                        <input type="text" id="reg-id" placeholder="Passport / ID Number" class="w-full p-3 border rounded-lg text-lg">
+                        <input type="text" id="reg-contact" placeholder="Emergency Contact No." class="w-full p-3 border rounded-lg text-lg">
+                    </div>
+                    <button id="register-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mt-8 transition-colors text-lg">Register</button>
+                    <button onclick="showView('welcome-view')" class="w-full mt-3 text-sm text-gray-500 hover:underline">Back to Welcome</button>
+                </div>
+            </div>
+
+            <div id="login-view" class="view-container hidden">
+                 <div class="bg-white p-10 rounded-lg shadow-xl max-w-md w-full">
+                     <h1 class="text-2xl font-bold mb-4">Login to Dashboard</h1>
+                     <p class="text-sm text-gray-500 mb-6">Enter the credentials you received upon registration.</p>
+                     <div class="space-y-4">
+                        <input type="text" id="login-id" placeholder="User ID (e.g., 1234567890)" class="w-full p-3 border rounded-lg text-lg">
+                        <input type="password" id="login-password" placeholder="4-Digit Password" class="w-full p-3 border rounded-lg text-lg">
+                     </div>
+                     <button id="login-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg mt-8 transition-colors text-lg">Login</button>
+                     <button onclick="showView('welcome-view')" class="w-full mt-3 text-sm text-gray-500 hover:underline">Back to Welcome</button>
+                 </div>
+            </div>
+
+            <div id="credentials-view" class="view-container hidden">
+                <div class="bg-white p-10 rounded-lg shadow-xl text-center max-w-md w-full">
+                    <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+                    <h1 class="text-2xl font-bold">Registration Successful!</h1>
+                    <p class="text-gray-600 mb-8">Please save these credentials. They are valid for 24 hours.</p>
+                    <div class="bg-gray-100 p-6 rounded-lg text-left space-y-4">
+                        <div>
+                            <label class="text-sm font-bold text-gray-500">USER ID</label>
+                            <p id="display-id" class="text-3xl font-mono bg-white p-2 rounded"></p>
+                        </div>
+                         <div>
+                            <label class="text-sm font-bold text-gray-500">PASSWORD</label>
+                            <p id="display-password" class="text-3xl font-mono bg-white p-2 rounded"></p>
+                        </div>
+                    </div>
+                    <button id="proceed-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg mt-10 transition-colors text-lg">Proceed to Dashboard</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Trip Dashboard -->
+        <div id="active-trip-view" class="hidden w-full h-full flex flex-col lg:flex-row p-4 gap-4">
+            <!-- Map Section -->
+            <div class="flex-grow h-1/2 lg:h-full relative">
+                <div id="tourist-map" class="shadow-lg"></div>
+                <!-- Location Status Indicator -->
+                <div id="location-status" class="location-status">
+                    <div id="status-dot" class="status-dot"></div>
+                    <span id="status-text">Getting location...</span>
+                </div>
+            </div>
+
+            <!-- Controls Section -->
+            <div class="w-full lg:w-96 flex-shrink-0 bg-white rounded-lg shadow-lg p-6 flex flex-col">
+                <h2 class="text-2xl font-bold mb-4 border-b pb-2">Control Panel</h2>
+                <div id="horizontal-id-card-container" class="mb-6"></div>
+                
+                <!-- Location Info -->
+                <div id="location-info" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-semibold text-gray-700 mb-2">Current Location</h3>
+                    <div id="coordinates-display" class="text-sm text-gray-600">
+                        <div>Lat: <span id="lat-display">--</span></div>
+                        <div>Lng: <span id="lng-display">--</span></div>
+                        <div class="mt-2">
+                            <span id="accuracy-display" class="text-xs text-gray-500">Accuracy: --</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-auto space-y-4">
+                    <button onclick="centerMapOnUser()" class="w-full flex items-center justify-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 px-4 rounded-lg transition-colors text-lg">
+                        <i class="fas fa-location-arrow"></i>
+                        Center on Me
+                    </button>
+                    <button onclick="refreshLocation()" class="w-full flex items-center justify-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold py-3 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Location
+                    </button>
+                    <button id="panic-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-6 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105 text-2xl">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        PANIC ALERT
+                    </button>
+                     <button onclick="handleLogout()" class="w-full mt-4 text-sm text-red-500 hover:underline">
+                        Logout & End Trip
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- App State & Configuration ---
+        const AppState = {
+            tourist: null,
+            loginCredentials: null,
+            map: null,
+            marker: null,
+            locationWatcherId: null,
+            lastKnownLocation: null
+        };
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('register-btn').addEventListener('click', handleRegistration);
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('proceed-btn').addEventListener('click', startTrip);
+            document.getElementById('panic-btn').addEventListener('click', handlePanic);
+        });
+        
+        // --- View Management ---
+        function showView(viewId) {
+            ['welcome-view', 'registration-view', 'login-view', 'credentials-view'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById('auth-views').classList.remove('hidden');
+            document.getElementById('active-trip-view').classList.add('hidden');
+            
+            const targetView = document.getElementById(viewId);
+            if(targetView) targetView.classList.remove('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('auth-views').classList.add('hidden');
+            document.getElementById('active-trip-view').classList.remove('hidden');
+            setTimeout(() => {
+                if (AppState.map) AppState.map.invalidateSize();
+            }, 100);
+        }
+
+        function showToast(message, type = 'default') {
+            const toast = document.getElementById('toast-message');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            if (type === 'error') toast.classList.add('error');
+            if (type === 'success') toast.classList.add('success');
+            
+            setTimeout(() => {
+                toast.classList.remove('show', 'error', 'success');
+            }, 4000);
+        }
+
+        function updateLocationStatus(status, isActive = false) {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            
+            statusText.textContent = status;
+            if (isActive) {
+                statusDot.classList.add('active');
+            } else {
+                statusDot.classList.remove('active');
+            }
+        }
+
+        function updateLocationDisplay(lat, lng, accuracy = null) {
+            document.getElementById('lat-display').textContent = lat.toFixed(6);
+            document.getElementById('lng-display').textContent = lng.toFixed(6);
+            if (accuracy) {
+                document.getElementById('accuracy-display').textContent = `Accuracy: ±${Math.round(accuracy)}m`;
+            }
+        }
+
+        // --- Registration & Login Logic ---
+        function handleRegistration() {
+            const name = document.getElementById('reg-name').value.trim();
+            const nationality = document.getElementById('reg-nationality').value.trim();
+            const idNumber = document.getElementById('reg-id').value.trim();
+            const contact = document.getElementById('reg-contact').value.trim();
+
+            if (!name || !nationality || !idNumber || !contact) {
+                showToast('Please fill all fields.', 'error');
+                return;
+            }
+
+            const userId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            const password = Math.floor(1000 + Math.random() * 9000).toString();
+
+            AppState.loginCredentials = { userId, password };
+            AppState.tourist = {
+                id: userId, name, nationality, idNumber, contact,
+                location: null,
+                isPanicking: false,
+            };
+
+            document.getElementById('display-id').textContent = userId;
+            document.getElementById('display-password').textContent = password;
+            document.getElementById('login-id').value = userId;
+            document.getElementById('login-password').value = password;
+            showView('credentials-view');
+        }
+        
+        function handleLogin() {
+            const enteredId = document.getElementById('login-id').value.trim();
+            const enteredPassword = document.getElementById('login-password').value.trim();
+            
+            if (!enteredId || !enteredPassword) {
+                showToast("Please enter both User ID and Password.", 'error');
+                return;
+            }
+
+            if (!AppState.loginCredentials) {
+                showToast("No tourist registered. Please register first.", 'error');
+                return;
+            }
+            
+            if (enteredId === AppState.loginCredentials.userId && enteredPassword === AppState.loginCredentials.password) {
+                startTrip();
+            } else {
+                showToast("Invalid User ID or Password.", 'error');
+            }
+        }
+
+        function handleLogout() {
+            if (AppState.locationWatcherId) {
+                navigator.geolocation.clearWatch(AppState.locationWatcherId);
+                AppState.locationWatcherId = null;
+            }
+            
+            AppState.tourist = null;
+            AppState.lastKnownLocation = null;
+            
+            if(AppState.map) {
+                AppState.map.remove();
+                AppState.map = null;
+            }
+            
+            showView('welcome-view');
+            showToast("Logged out successfully.", 'success');
+        }
+
+        function startTrip() {
+            showDashboard();
+            renderHorizontalIdCard(AppState.tourist);
+            initializeTouristMap();
+        }
+
+        // --- Location & Map Logic ---
+        function initializeTouristMap() {
+            if (AppState.map) AppState.map.remove();
+            
+            // Create map with a default view (will be updated once location is found)
+            AppState.map = L.map('tourist-map').setView([26.9124, 75.7873], 10); // Jaipur coordinates as fallback
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(AppState.map);
+
+            // Check if geolocation is supported
+            if (!('geolocation' in navigator)) {
+                updateLocationStatus('Geolocation not supported', false);
+                showToast("Your browser doesn't support geolocation.", 'error');
+                return;
+            }
+
+            updateLocationStatus('Requesting location...', false);
+            showToast("Requesting your location...", 'default');
+
+            // Get initial position with high accuracy
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    handleLocationSuccess(position);
+                    startLocationWatching();
+                },
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 30000, // 30 seconds timeout
+                    maximumAge: 0 // Don't use cached location
+                }
+            );
+        }
+
+        function startLocationWatching() {
+            if (AppState.locationWatcherId) {
+                navigator.geolocation.clearWatch(AppState.locationWatcherId);
+            }
+
+            AppState.locationWatcherId = navigator.geolocation.watchPosition(
+                handleLocationSuccess,
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 5000 // Accept 5-second-old location
+                }
+            );
+        }
+
+        function handleLocationSuccess(position) {
+            const { latitude, longitude, accuracy } = position.coords;
+            
+            AppState.tourist.location = { lat: latitude, lng: longitude };
+            AppState.lastKnownLocation = { lat: latitude, lng: longitude, accuracy };
+            
+            updateLocationStatus('Location active', true);
+            updateLocationDisplay(latitude, longitude, accuracy);
+            
+            // Create or update marker
+            if (!AppState.marker) {
+                const userIcon = L.divIcon({ 
+                    html: `<i class="fas fa-map-marker-alt text-blue-600 text-3xl"></i>`, 
+                    className: 'leaflet-div-icon', 
+                    iconSize: [30, 40], 
+                    iconAnchor: [15, 40] 
+                });
+                
+                AppState.marker = L.marker([latitude, longitude], { icon: userIcon }).addTo(AppState.map);
+                AppState.marker.bindPopup('<b>Your Current Location</b><br/>Live GPS tracking active');
+                
+                // Center map on user location
+                AppState.map.setView([latitude, longitude], 16);
+                showToast("Location found! GPS tracking active.", 'success');
+            } else {
+                // Update existing marker
+                AppState.marker.setLatLng([latitude, longitude]);
+            }
+        }
+
+        function handleLocationError(error) {
+            let message = "Could not get your location.";
+            let details = "";
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message = "Location access denied.";
+                    details = "Please enable location permissions in your browser settings and refresh the page.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = "Location information unavailable.";
+                    details = "Please check your GPS signal or network connection.";
+                    break;
+                case error.TIMEOUT:
+                    message = "Location request timed out.";
+                    details = "The location request took too long. Please try again.";
+                    break;
+                default:
+                    message = "An unknown error occurred.";
+                    details = "Please try refreshing the page.";
+                    break;
+            }
+            
+            updateLocationStatus('Location failed', false);
+            showToast(`${message} ${details}`, 'error');
+            
+            console.error("Geolocation error:", error);
+        }
+        
+        function centerMapOnUser() {
+            if (AppState.lastKnownLocation) {
+                AppState.map.setView([AppState.lastKnownLocation.lat, AppState.lastKnownLocation.lng], 17, {animate: true});
+                showToast("Map centered on your location.", 'success');
+            } else {
+                showToast("Your location is not available yet.", 'error');
+            }
+        }
+
+        function refreshLocation() {
+            if (!('geolocation' in navigator)) {
+                showToast("Geolocation not supported.", 'error');
+                return;
+            }
+
+            updateLocationStatus('Refreshing...', false);
+            showToast("Refreshing your location...", 'default');
+
+            navigator.geolocation.getCurrentPosition(
+                handleLocationSuccess,
+                handleLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        function handlePanic() {
+            if (!AppState.tourist) return;
+            
+            if (!AppState.lastKnownLocation) {
+                showToast("Cannot send panic alert: Your location is not available.", 'error');
+                return;
+            }
+
+            if (AppState.tourist.isPanicking) {
+                showToast("Panic alert already sent.", 'error');
+                return;
+            }
+            
+            AppState.tourist.isPanicking = true;
+            const panicBtn = document.getElementById('panic-btn');
+            panicBtn.disabled = true;
+            panicBtn.classList.replace('bg-red-600', 'bg-gray-500');
+            panicBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Alert Sent';
+            
+            const { name, id } = AppState.tourist;
+            const { lat, lng } = AppState.lastKnownLocation;
+            const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+            const timestamp = new Date().toLocaleString();
+            
+            const subject = `🚨 URGENT: PANIC ALERT from Tourist ${name} (ID: ${id})`;
+            const body = `EMERGENCY PANIC ALERT\n\n` +
+                        `Tourist Details:\n` +
+                        `Name: ${name}\n` +
+                        `ID: ${id}\n` +
+                        `Nationality: ${AppState.tourist.nationality}\n` +
+                        `Emergency Contact: ${AppState.tourist.contact}\n\n` +
+                        `Location Information:\n` +
+                        `Latitude: ${lat}\n` +
+                        `Longitude: ${lng}\n` +
+                        `Timestamp: ${timestamp}\n\n` +
+                        `Google Maps Link:\n${mapsLink}\n\n` +
+                        `This is an automated emergency alert from the Tourist Safety Dashboard.`;
+            
+            const mailtoLink = `mailto:emergency@jaipur.gov.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Try to open email client
+            try {
+                window.location.href = mailtoLink;
+                showToast('Emergency email opened. Please send immediately!', 'success');
+            } catch (e) {
+                showToast('Could not open email client. Please contact emergency services directly.', 'error');
+            }
+        }
+
+        // --- ID Card Rendering ---
+        function renderHorizontalIdCard(tourist) {
+            const container = document.getElementById('horizontal-id-card-container');
+            container.innerHTML = `
+                <div class="id-card-horizontal">
+                    <div id="qr-code-placeholder" class="qr-code"></div>
+                    <div class="details">
+                        <div class="name">${tourist.name}</div>
+                        <div>ID: <span class="id-number">${tourist.id}</span></div>
+                        <div class="text-xs opacity-70">TOURIST SAFETY PASS (Valid 24 Hrs)</div>
+                    </div>
+                </div>`;
+            
+            new QRCode(document.getElementById("qr-code-placeholder"), {
+                text: JSON.stringify({
+                    id: tourist.id, 
+                    name: tourist.name,
+                    nationality: tourist.nationality,
+                    timestamp: Date.now()
+                }),
+                width: 60, 
+                height: 60, 
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        // Initial view
+        showView('welcome-view');
+    </script>
+</body>
+</html>

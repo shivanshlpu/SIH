@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Individual/Group Registration - Smart Tourist Safety System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5563DE;
+            --secondary-color: #74ABE2;
+            --accent-color: #ffd700;
+            --success-color: #28a745;
+            --text-color: #fff;
+            --bg-blur: rgba(255, 255, 255, 0.1);
+            --container-bg: rgba(255, 255, 255, 0.15);
+            --error-color: #dc3545;
+            --info-color: #17a2b8; /* Added info color for home button */
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .container {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.2s ease-in-out;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+        .form-group input {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        input, select {
+            width: 100%;
+            margin-bottom: 1.5rem;
+            padding: 0.9rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.2);
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23fff" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14c.16.29.57.29.73 0l6.23-11.332a.89.89 0 0 0-.74-.808H1.751a.89.89 0 0 0-.74.808l6.23 11.332z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 0.8rem;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        select option {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+        input:focus, select:focus {
+            outline: none;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        }
+        button, a.btn {
+            width: 100%;
+            padding: 1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        .btn-register {
+            background-color: var(--success-color);
+            color: white;
+        }
+        .btn-register:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+             background: none;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            border: 2px solid var(--accent-color);
+        }
+        .btn-secondary:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        #generate-form-btn {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 0.9rem 1.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        #generate-form-btn:hover {
+            background-color: #ffec8b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .btn-home {
+            background-color: var(--info-color); 
+            color: white;
+            border: 2px solid var(--info-color);
+        }
+
+        .btn-home:hover {
+            background-color: #117a8b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 600;
+            color: var(--error-color);
+        }
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        /* Custom Modern Alert Pop-up */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease-in-out;
+        }
+        .custom-alert-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-alert-box {
+            background: var(--container-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease-in-out;
+        }
+        .custom-alert-overlay.visible .custom-alert-box {
+            transform: scale(1);
+        }
+        .custom-alert-box h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        .custom-alert-box p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        .alert-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .alert-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .alert-buttons .alert-ok-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+        }
+        .alert-buttons .alert-ok-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Individual/Group Registration</h2>
+
+        <div class="form-section" id="member-count-section">
+            <div class="form-group">
+                <input type="number" id="member-count" placeholder="Number of Members (1-10)" min="1" max="10" required />
+                <button id="generate-form-btn">Generate Form</button>
+            </div>
+            <p><strong>Note:</strong> You will be the group admin. Your details will be entered first.</p>
+        </div>
+
+        <form id="individual-registration-form" style="display:none;">
+            <div id="dynamic-form-fields"></div>
+            <div id="error-message" class="message" style="display:none;"></div>
+            <button type="submit" id="submit-btn">Register Group</button>
+        </form>
+        
+        <div class="btn-group">
+            <a href="individual-login.html" class="btn btn-secondary">Already have an account? Login</a>
+            <a href="home.html" class="btn btn-home">Go to Home</a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Smart Tourist Safety System
+    </footer>
+
+    <div id="custom-alert" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <h3 id="alert-title"></h3>
+            <p id="alert-message"></p>
+            <div class="alert-buttons">
+                <button class="alert-ok-btn" id="alert-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const customAlert = document.getElementById('custom-alert');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMessage = document.getElementById('alert-message');
+        const alertOkBtn = document.getElementById('alert-ok');
+
+        function showAlert(title, message, redirect = false, redirectUrl = '') {
+            alertTitle.textContent = title;
+            alertMessage.textContent = message;
+            customAlert.classList.add('visible');
+            
+            const handleOkClick = () => {
+                customAlert.classList.remove('visible');
+                if (redirect) {
+                    window.location.href = redirectUrl;
+                }
+                alertOkBtn.removeEventListener('click', handleOkClick);
+            };
+
+            alertOkBtn.addEventListener('click', handleOkClick);
+        }
+
+        document.getElementById('generate-form-btn').addEventListener('click', function() {
+            const memberCount = parseInt(document.getElementById('member-count').value);
+            const dynamicForm = document.getElementById('individual-registration-form');
+            const formFieldsContainer = document.getElementById('dynamic-form-fields');
+            
+            if (memberCount >= 1 && memberCount <= 10) {
+                formFieldsContainer.innerHTML = '';
+                
+                for (let i = 0; i < memberCount; i++) {
+                    const memberFormHTML = `
+                        <div class="member-form">
+                            <h3>Member ${i + 1} Details ${i === 0 ? '(Group Admin)' : ''}</h3>
+                            <input type="text" name="name" placeholder="Full Name" required />
+                            <input type="number" name="age" placeholder="Age" required />
+                            <select name="gender" required>
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <input type="text" name="mobile" placeholder="Mobile Number (e.g., 9876543210)" required />
+                            <input type="text" name="emergency" placeholder="Emergency Contact Number (e.g., 9876543210)" required />
+                            <input type="text" name="city" placeholder="City" required />
+                            <input type="text" name="destination" placeholder="Destination" required />
+                            <select name="cardType" required>
+                                <option value="" disabled selected>Select Card Type</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Platinum">Platinum</option>
+                                <option value="Diamond">Diamond</option>
+                            </select>
+                            ${i === 0 ? `
+                                <input type="text" name="username" placeholder="Group Admin Username" required />
+                                <input type="password" name="password" placeholder="Group Admin Password" required />
+                            ` : ''}
+                        </div>
+                        <hr style="border: 1px solid rgba(255, 255, 255, 0.2); margin: 2rem 0;">
+                    `;
+                    formFieldsContainer.innerHTML += memberFormHTML;
+                }
+                dynamicForm.style.display = 'block';
+            } else {
+                showAlert('Invalid Number', 'Please enter a number between 1 and 10.');
+            }
+        });
+
+        document.getElementById('individual-registration-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formFields = document.querySelectorAll('.member-form');
+            const tourists = JSON.parse(localStorage.getItem('tourists')) || [];
+            const guides = JSON.parse(localStorage.getItem('guides')) || [];
+            let allGroupMembers = [];
+            let groupAdmin = {};
+
+            let isValid = true;
+            formFields.forEach((form, index) => {
+                const member = {
+                    id: 'TOURIST-' + Date.now() + '-' + index,
+                    name: form.querySelector('input[name="name"]').value.trim(),
+                    age: parseInt(form.querySelector('input[name="age"]').value),
+                    gender: form.querySelector('select[name="gender"]').value,
+                    mobile: form.querySelector('input[name="mobile"]').value.trim(),
+                    emergency: form.querySelector('input[name="emergency"]').value.trim(),
+                    city: form.querySelector('input[name="city"]').value.trim(),
+                    destination: form.querySelector('input[name="destination"]').value.trim(),
+                    cardType: form.querySelector('select[name="cardType"]').value
+                };
+
+                if (!member.name || !member.age || !member.gender || !member.mobile || !member.emergency || !member.city || !member.destination || !member.cardType) {
+                    isValid = false;
+                    return;
+                }
+                if (member.age < 1 || member.age > 120) {
+                    isValid = false;
+                    return;
+                }
+                if (!/^\d{10}$/.test(member.mobile) || !/^\d{10}$/.test(member.emergency)) {
+                    isValid = false;
+                    return;
+                }
+
+                if (index === 0) {
+                    const username = form.querySelector('input[name="username"]').value.trim();
+                    const password = form.querySelector('input[name="password"]').value;
+
+                    if (!username || !password || password.length < 6) {
+                        isValid = false;
+                        return;
+                    }
+
+                    const usernameExists = [...tourists, ...guides].some(u => u.username === username);
+                    if (usernameExists) {
+                        showAlert('Registration Failed', 'Username already taken. Please choose another.');
+                        isValid = false;
+                        return;
+                    }
+
+                    groupAdmin = {
+                        id: 'GUIDE-' + Date.now(),
+                        name: member.name,
+                        age: member.age,
+                        gender: member.gender,
+                        groupName: `Group-${member.name}`,
+                        groupMembers: formFields.length,
+                        emergency: member.emergency,
+                        username: username,
+                        password: password
+                    };
+                    
+                    member.virtualID = {
+                        id: 'VIRT-' + Date.now(),
+                        permissions: 'Central Park, Museum District',
+                        liveLocation: 'Mock Location',
+                        cardType: member.cardType
+                    };
+                    
+                    allGroupMembers.forEach(m => m.guideId = groupAdmin.id);
+                    member.guideId = groupAdmin.id;
+
+                } else {
+                    member.guideId = groupAdmin.id;
+                }
+
+                allGroupMembers.push(member);
+            });
+
+            if (!isValid) {
+                showAlert('Registration Failed', 'Please fill all fields correctly.');
+                return;
+            }
+
+            localStorage.setItem('tourists', JSON.stringify([...tourists, ...allGroupMembers]));
+            localStorage.setItem('guides', JSON.stringify([...guides, groupAdmin]));
+
+            showAlert('Registration Successful!', 'You can now login as the group admin.', true, 'individual-login.html');
+        });
+        
+        // This listener is not needed anymore as it's handled inside showAlert
+        /*
+        alertOkBtn.addEventListener('click', () => {
+             customAlert.classList.remove('visible');
+        });
+        */
+    </script>
+</body>
+</html>

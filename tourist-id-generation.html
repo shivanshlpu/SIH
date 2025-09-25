@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate IDs - Smart Tourist Safety System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #5563DE;
+            --secondary-color: #74ABE2;
+            --accent-color: #ffd700;
+            --text-color: #fff;
+            --bg-blur: rgba(255, 255, 255, 0.1);
+            --container-bg: rgba(255, 255, 255, 0.15);
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --card-detail-color: #e0e0e0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex; /* Added for sticky footer */
+            flex-direction: column; /* Added for sticky footer */
+            padding-top: 2rem;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-blur);
+            backdrop-filter: blur(5px);
+            padding: 1.5rem 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            margin: 0 1rem 2rem 1rem;
+        }
+        .navbar h1 {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.6rem;
+        }
+        .navbar-links button, .navbar-links a {
+            background: none;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.6rem 1.2rem; /* Reduced padding slightly */
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .navbar-links button:hover, .navbar-links a:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+        }
+        .container {
+            flex-grow: 1; /* Added for sticky footer */
+            animation: fadeIn 1.5s ease-in;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Adjusted minmax for better fit */
+            gap: 2rem;
+            padding-bottom: 40px; /* Space above footer */
+        }
+        /* Virtual ID Card Styling */
+        .tourist-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(85, 99, 222, 0.2));
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 18px; /* Slightly smoother corners */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
+        }
+        .tourist-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem; /* Larger name */
+            font-weight: 700;
+        }
+        .tourist-card p {
+            margin-bottom: 0.3rem;
+            opacity: 0.9;
+            color: var(--card-detail-color);
+        }
+        .tourist-card .id-detail-label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .tourist-card .id-section {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+            width: 100%;
+            font-size: 0.95rem;
+        }
+        .tourist-card .id-section.hidden {
+            display: none;
+        }
+        .qr-code-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .generate-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+        }
+        .generated-message {
+            color: var(--info-color);
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+        footer {
+            /* Fix for sticky footer */
+            width: 100%;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background-color: rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar-links {
+                margin-top: 1rem;
+            }
+            .navbar-links button, .navbar-links a {
+                margin-left: 0;
+                margin-right: 1rem;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <h1>Generate Virtual IDs</h1>
+        <div class="navbar-links">
+            <a href="central-dashboard2.html" id="back-btn">Back to Dashboard</a>
+            <button id="logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--accent-color);">Selected Tourists</h2>
+        <div class="card-grid" id="tourist-cards-container">
+            </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Smart Tourist Safety System
+    </footer>
+
+    <script>
+        // Load data from Local Storage
+        const selectedTourists = JSON.parse(localStorage.getItem('selectedForVirtualID')) || [];
+        const touristsData = JSON.parse(localStorage.getItem('tourists')) || [];
+        const container = document.getElementById('tourist-cards-container');
+
+        // Check for tourists and display message if none are selected
+        if (selectedTourists.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding: 50px; font-size: 1.2rem;">No tourists were selected for ID generation. Please go back to the dashboard to finalize a group.</p>';
+        }
+
+        // Function to handle QR code generation
+        const generateQrCode = (virtualID, touristId) => {
+            const qrCodeData = JSON.stringify({ ...virtualID, touristId: touristId }); 
+            const qrCodeContainer = document.getElementById(`qr-code-container-${touristId}`);
+            
+            // Clear container before generating (essential for re-rendering)
+            if (qrCodeContainer) {
+                 qrCodeContainer.innerHTML = ''; 
+                 new QRCode(qrCodeContainer, {
+                    text: qrCodeData,
+                    width: 128,
+                    height: 128,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        };
+
+        // Function to create and render a single tourist card
+        const renderTouristCard = (tourist) => {
+            const card = document.createElement('div');
+            card.classList.add('tourist-card');
+            
+            // Find the most up-to-date tourist data from the main list (including potentially generated ID)
+            const upToDateTourist = touristsData.find(t => t.id === tourist.id) || tourist;
+            const hasVirtualID = upToDateTourist.virtualID && upToDateTourist.virtualID.id;
+
+            card.innerHTML = `
+                <h3>${upToDateTourist.name}</h3>
+                <p><span class="id-detail-label">Username:</span> ${upToDateTourist.username || 'N/A'}</p>
+                <p><span class="id-detail-label">Destination:</span> ${upToDateTourist.destination || 'N/A'}</p>
+                
+                <button class="generate-btn" data-id="${upToDateTourist.id}" style="${hasVirtualID ? 'display: none;' : ''}">Generate Virtual ID</button>
+                
+                <div class="id-section ${hasVirtualID ? '' : 'hidden'}" id="id-section-${upToDateTourist.id}">
+                    <p class="generated-message">Virtual ID Generated!</p>
+                    <p><span class="id-detail-label">V-ID:</span> <span class="virtual-id-number">${hasVirtualID ? upToDateTourist.virtualID.id : 'N/A'}</span></p>
+                    <p><span class="id-detail-label">Card Type:</span> <span class="card-type">${upToDateTourist.cardType || 'Gold'}</span></p>
+                    <p><span class="id-detail-label">Permissions:</span> <span class="permissions">${hasVirtualID ? upToDateTourist.virtualID.permissions : 'N/A'}</span></p>
+                    <p><span class="id-detail-label">Live Location:</span> <span class="live-location">${hasVirtualID ? upToDateTourist.virtualID.liveLocation : 'Enabled'}</span></p>
+                    <div class="qr-code-container" id="qr-code-container-${upToDateTourist.id}"></div>
+                </div>
+            `;
+            container.appendChild(card);
+            
+            // If ID already exists, generate the QR code immediately on load
+            if (hasVirtualID) {
+                generateQrCode(upToDateTourist.virtualID, upToDateTourist.id);
+            }
+        };
+
+        // Loop through all selected tourists and render cards
+        selectedTourists.forEach(renderTouristCard);
+
+        // Add event listener to all "Generate" buttons
+        document.addEventListener('click', (event) => {
+             if (event.target.classList.contains('generate-btn')) {
+                const button = event.target;
+                const touristId = button.dataset.id;
+                
+                // Find tourist from the main data list to get all details
+                const tourist = touristsData.find(t => t.id === touristId);
+
+                if (!tourist) return;
+
+                // 1. Create the Virtual ID object
+                const virtualID = {
+                    id: 'VRT-' + Math.random().toString(36).substring(2, 8).toUpperCase(), // Better random ID
+                    permissions: 'All Public Zones, Central Area Access', // Example permissions
+                    liveLocation: 'Enabled',
+                    cardType: tourist.cardType || 'Gold'
+                };
+
+                // 2. Find the tourist in the main `touristsData` and update
+                const touristIndex = touristsData.findIndex(t => t.id === touristId);
+                if (touristIndex !== -1) {
+                    touristsData[touristIndex].virtualID = virtualID;
+                    localStorage.setItem('tourists', JSON.stringify(touristsData));
+                }
+
+                // 3. Update the UI to show the generated ID details
+                const idSection = document.getElementById(`id-section-${touristId}`);
+                if (idSection) {
+                    idSection.classList.remove('hidden');
+                    button.style.display = 'none';
+
+                    // Update the UI text fields with the new details
+                    idSection.querySelector('.virtual-id-number').textContent = virtualID.id;
+                    idSection.querySelector('.permissions').textContent = virtualID.permissions;
+                    idSection.querySelector('.live-location').textContent = virtualID.liveLocation;
+
+                    // 4. Generate the QR Code
+                    generateQrCode(virtualID, touristId);
+                    
+                    alert(`${tourist.name}'s Virtual ID (${virtualID.id}) has been successfully generated!`);
+                }
+             }
+        });
+
+        // --- Navigation and Logout ---
+        document.getElementById('back-btn').addEventListener('click', () => {
+            window.location.href = 'central-dashboard3.html';
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'guide-login.html';
+        });
+    </script>
+</body>
+</html>
